@@ -1,0 +1,564 @@
+<html lang="pt-br"><head><base href="https://websimcreation.com/paperwork/payslip">
+<title>Gerador de pagamentos</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+        color: #333;
+    }
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input, select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    #payslipOutput {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    .payslip-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .payslip-table th, .payslip-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .payslip-table th {
+        background-color: #f2f2f2;
+    }
+    .company-info {
+        margin-bottom: 20px;
+    }
+    .stamp {
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        color: #e74c3c;
+        border: 2px solid #e74c3c;
+        border-radius: 50%;
+        padding: 10px;
+        transform: rotate(-15deg);
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+    #backButton {
+        background-color: #2ecc71;
+        margin-bottom: 20px;
+    }
+    #floatingDownload {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #9b59b6;
+        z-index: 1000;
+    }
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #payslipOutput, #payslipOutput * {
+            visibility: visible;
+        }
+        #payslipOutput {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+    .leave-balance-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .leave-balance-table th, .leave-balance-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .leave-balance-table th {
+        background-color: #f2f2f2;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <button id="backButton" onclick="window.location.href='https://websimcreation.com/paperwork/'">👈 Voltar</button>
+    <h1>Gerador de Pagamento</h1>
+    <p>Preencha os dados abaixo para gerar seu Pagamento.</p>
+
+    <form id="payslipForm" method="GET" action="https://websimcreation.com/paperwork/payslip/generate">
+        <div class="form-group">
+            <label for="salary">Salário mensal:</label>
+            <input type="number" id="salary" name="salary" value="8500" required>
+        </div>
+        <div class="form-group">
+            <label for="payDate">Data de pagamento:</label>
+            <input type="number" id="payDate" name="payDate" min="1" max="31" value="25" required>
+        </div>
+        <div class="form-group">
+            <label for="payFrequency">Frequência de pagamento:</label>
+            <select id="payFrequency" name="payFrequency" required>
+                <option value="weekly">Semanalmente</option>
+                <option value="fortnightly">Quinzenal</option>
+                <option value="monthly" selected>Mensal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="idNumber">Número de identificação (13 dígitos):</label>
+            <input type="text" id="idNumber" name="idNumber" pattern="\d{13}" value="8888888888888" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" name="name" value="John" required>
+        </div>
+        <div class="form-group">
+            <label for="surname">Sobrenome:</label>
+            <input type="text" id="surname" name="surname" value="Doe" required>
+        </div>
+        <div class="form-group">
+            <label for="employeeCode">Código do funcionário:</label>
+            <input type="text" id="employeeCode" name="employeeCode" value="EMP001" required>
+        </div>
+        <div class="form-group">
+            <label for="bankName">Banco:</label>
+            <input type="text" id="bankName" name="bankName" value="Standard Bank" required>
+        </div>
+        <div class="form-group">
+            <label for="bankAccount">Número da conta:</label>
+            <input type="text" id="bankAccount" name="bankAccount" value="1234567890" required>
+        </div>
+        <div class="form-group">
+            <label for="employerName">Nome do empregador:</label>
+            <input type="text" id="employerName" name="employerName" value="Khular Inc." required>
+        </div>
+        <div class="form-group">
+            <label for="employerPhone">Telefone do empregador:</label>
+            <input type="tel" id="employerPhone" name="employerPhone" value="+27 11 123 4567" required>
+        </div>
+        <div class="form-group">
+            <label for="employerEmail">E-mail do empregador:</label>
+            <input type="email" id="employerEmail" name="employerEmail" value="info@khular.com" required>
+        </div>
+        <div class="form-group">
+            <label for="employerAddress">Endereço do empregador:</label>
+            <input type="text" id="employerAddress" name="employerAddress" value="123 Main Street, Johannesburg" required>
+        </div>
+        <div class="form-group">
+            <label for="overtime">Horas extras:</label>
+            <input type="number" id="overtime" name="overtime" value="10" min="0" step="0.5">
+        </div>
+        <button type="submit">Gerar pagamento</button>
+    </form>
+
+    <div id="payslipOutput">
+        <h2>Pagamento</h2>
+        <div style="text-align: right;">
+            <div class="stamp">PAGO<br>20 ago 2024</div>
+        </div>
+        <div class="company-info">
+            <strong>Kleber Souza </strong><br>
+            Avenida paulista, 1001 São Pulo<br>
+            +55 11 97780-4301<br>
+            kleber.srocha98@gmail.com
+        </div>
+        <table class="payslip-table">
+            <tr>
+                <th>Descrição</th>
+                <th>Quantia</th>
+                <th>Saldo Inicial</th>
+            </tr>
+            <tr>
+                <td>Salário base</td>
+                <td>R 8500.00</td>
+                <td>0.00</td>
+            </tr>
+            <tr>
+                <td>Horas extras 1.5</td>
+                <td>R 726.14</td>
+                <td>0.00</td>
+            </tr>
+            <tr>
+                <td><strong>Lucros totais</strong></td>
+                <td><strong>R 9226.14</strong></td>
+                <td></td>
+            </tr>
+        </table>
+        
+        <table class="payslip-table">
+            <tr>
+                <th>Descrição</th>
+                <th>Quantia</th>
+                <th>Saldo Inicial</th>
+            </tr>
+            <tr>
+                <td>Pague conforme você ganha</td>
+                <td>R 1660.71</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Fundo de Seguro Desemprego</td>
+                <td>R 92.26</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Taxa de desenvolvimento de habilidades</td>
+                <td>R 92.26</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><strong>Deduções totais</strong></td>
+                <td><strong>R 1845.23</strong></td>
+                <td></td>
+            </tr>
+        </table>
+        
+        <p><strong>Salário líquido: R 7380.91</strong></p>
+        
+        <table class="payslip-table">
+            <tr>
+                <th colspan="2">Detalhes do funcionário</th>
+                <th colspan="2">Detalhes do pagamento</th>
+            </tr>
+            <tr>
+                <td>Nome:</td>
+                <td>João Ninguém</td>
+                <td>Banco:</td>
+                <td>Banco Padrão</td>
+            </tr>
+            <tr>
+                <td>Código do funcionário:</td>
+                <td>EMP001</td>
+                <td>Conta:</td>
+                <td>1234567890</td>
+            </tr>
+            <tr>
+                <td>Período de pagamento:</td>
+                <td>01/7/2023 - 31/7/2023</td>
+                <td>Data de pagamento:</td>
+                <td>25/7/2023</td>
+            </tr>
+        </table>
+
+        <h3>Saldos de licença</h3>
+        <table class="leave-balance-table">
+            <tr>
+                <th>Descrição</th>
+                <th>Saldo B/Fwd</th>
+                <th>Acumulado</th>
+                <th>Levado</th>
+                <th>Equilíbrio C/Fwd</th>
+            </tr>
+            <tr>
+                <td>Licença médica</td>
+                <td>1.9615</td>
+                <td>0.9615</td>
+                <td>0.0000</td>
+                <td>2.9230</td>
+            </tr>
+            <tr>
+                <td>Banco de horas</td>
+                <td>3.0000</td>
+                <td>1.5000</td>
+                <td>0.0000</td>
+                <td>4.5000</td>
+            </tr>
+            <tr>
+                <td>Licença por Longo Tempo de Serviço</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<button id="floatingDownload" onclick="showDownloadOptions()">Baixar folha de pagamento</button>
+
+<script>
+document.getElementById('payslipForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    generatePayslip();
+});
+
+function generatePayslip() {
+    const salary = parseFloat(document.getElementById('salary').value);
+    const payDate = document.getElementById('payDate').value;
+    const payFrequency = document.getElementById('payFrequency').value;
+    const name = document.getElementById('name').value;
+    const surname = document.getElementById('surname').value;
+    const employeeCode = document.getElementById('employeeCode').value;
+    const employerName = document.getElementById('employerName').value;
+    const overtimeHours = parseFloat(document.getElementById('overtime').value) || 0;
+
+    let payPeriod, grossPay, tax, netPay, uif, sdl, overtime;
+
+    const currentDate = new Date();
+    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+
+    switch(payFrequency) {
+        case 'weekly':
+            payPeriod = `${payDate}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()} - ${payDate}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+            grossPay = (salary / 4).toFixed(2);
+            break;
+        case 'fortnightly':
+            payPeriod = `${payDate}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()} - ${payDate}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+            grossPay = (salary / 2).toFixed(2);
+            break;
+        case 'monthly':
+            payPeriod = `01/${currentDate.getMonth() + 1}/${currentDate.getFullYear()} - ${lastDayOfMonth}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+            grossPay = salary.toFixed(2);
+            break;
+    }
+
+    // Calculate overtime
+    const overtimeRate = (salary / 22 / 8) * 1.5; // Assuming 22 working days per month and 8 hours per day
+    overtime = (overtimeHours * overtimeRate).toFixed(2);
+
+    // Add overtime to gross pay
+    grossPay = (parseFloat(grossPay) + parseFloat(overtime)).toFixed(2);
+
+    // Simplified tax calculation (this should be replaced with accurate tax brackets)
+    tax = (grossPay * 0.18).toFixed(2);
+    uif = (grossPay * 0.01).toFixed(2);
+    sdl = (grossPay * 0.01).toFixed(2);
+    netPay = (grossPay - tax - uif - sdl).toFixed(2);
+
+    const payslipHTML = `
+        <h2>Payslip</h2>
+        <div style="text-align: right;">
+            <div class="stamp">PAID<br>${currentDate.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+        </div>
+        <div class="company-info">
+            <strong>${employerName}</strong><br>
+            ${document.getElementById('employerAddress').value}<br>
+            ${document.getElementById('employerPhone').value}<br>
+            ${document.getElementById('employerEmail').value}
+        </div>
+        <table class="payslip-table">
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Opening Balance</th>
+            </tr>
+            <tr>
+                <td>Basic Salary</td>
+                <td>R ${salary.toFixed(2)}</td>
+                <td>0.00</td>
+            </tr>
+            <tr>
+                <td>OVERTIME 1.5</td>
+                <td>R ${overtime}</td>
+                <td>0.00</td>
+            </tr>
+            <tr>
+                <td><strong>Total Earnings</strong></td>
+                <td><strong>R ${grossPay}</strong></td>
+                <td></td>
+            </tr>
+        </table>
+        
+        <table class="payslip-table">
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Opening Balance</th>
+            </tr>
+            <tr>
+                <td>Pay as you Earn</td>
+                <td>R ${tax}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Unemployment Insurance Fund</td>
+                <td>R ${uif}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Skills Development Levy</td>
+                <td>R ${sdl}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><strong>Total Deductions</strong></td>
+                <td><strong>R ${(parseFloat(tax) + parseFloat(uif) + parseFloat(sdl)).toFixed(2)}</strong></td>
+                <td></td>
+            </tr>
+        </table>
+        
+        <p><strong>Net Pay: R ${netPay}</strong></p>
+        
+        <table class="payslip-table">
+            <tr>
+                <th colspan="2">Employee Details</th>
+                <th colspan="2">Payment Details</th>
+            </tr>
+            <tr>
+                <td>Name:</td>
+                <td>${name} ${surname}</td>
+                <td>Bank:</td>
+                <td>${document.getElementById('bankName').value}</td>
+            </tr>
+            <tr>
+                <td>Employee Code:</td>
+                <td>${employeeCode}</td>
+                <td>Account:</td>
+                <td>${document.getElementById('bankAccount').value}</td>
+            </tr>
+            <tr>
+                <td>Pay Period:</td>
+                <td>${payPeriod}</td>
+                <td>Pay Date:</td>
+                <td>${payDate}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}</td>
+            </tr>
+        </table>
+
+        <h3>Leave Balances</h3>
+        <table class="leave-balance-table">
+            <tr>
+                <th>Description</th>
+                <th>Balance B/Fwd</th>
+                <th>Accrued</th>
+                <th>Taken</th>
+                <th>Balance C/Fwd</th>
+            </tr>
+            <tr>
+                <td>Sick Leave</td>
+                <td>1.9615</td>
+                <td>0.9615</td>
+                <td>0.0000</td>
+                <td>2.9230</td>
+            </tr>
+            <tr>
+                <td>Annual Leave</td>
+                <td>3.0000</td>
+                <td>1.5000</td>
+                <td>0.0000</td>
+                <td>4.5000</td>
+            </tr>
+            <tr>
+                <td>Long Service Leave</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+                <td>0.0000</td>
+            </tr>
+        </table>
+    `;
+
+    document.getElementById('payslipOutput').innerHTML = payslipHTML;
+    document.getElementById('payslipOutput').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showDownloadOptions() {
+    const options = ['HTML', 'Plain Text', 'PDF', 'Print'];
+    const selectedOption = prompt('Select download format:\n' + options.join('\n'));
+    
+    if (selectedOption && options.includes(selectedOption)) {
+        const uid = generateUID();
+        const fileName = `payslip_${uid}`;
+        
+        switch(selectedOption) {
+            case 'HTML':
+                downloadHTML(fileName);
+                break;
+            case 'Plain Text':
+                downloadPlainText(fileName);
+                break;
+            case 'PDF':
+                downloadPDF(fileName);
+                break;
+            case 'Print':
+                window.print();
+                break;
+        }
+    }
+}
+
+function generateUID() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+function downloadHTML(fileName) {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function downloadPlainText(fileName) {
+    const textContent = document.getElementById('payslipOutput').innerText;
+    const blob = new Blob([textContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function downloadPDF(fileName) {
+    alert('PDF download functionality would be implemented here. For this simulation, we\'ll download an HTML file instead.');
+    downloadHTML(fileName);
+}
+
+// Disable screenshot
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
+        e.preventDefault();
+        alert('Screenshots are disabled for this application.');
+    }
+});
+
+// Disable right-click
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    alert('Right-click is disabled for this application.');
+});
+</script>
+</body></html>
